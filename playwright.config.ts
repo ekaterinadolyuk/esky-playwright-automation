@@ -6,6 +6,7 @@ export default defineConfig({
   fullyParallel: true,
   reporter: 'html',
   use: {
+    baseURL: 'https://www.esky.pl/',
     trace: 'on-first-retry',
     video: 'retain-on-failure',
   },
@@ -15,6 +16,7 @@ export default defineConfig({
       name: 'setup',
       testMatch: /.*\.setup\.ts/,
       use: { ...devices['Desktop Chrome'] },
+      timeout: 60000,
     },
     {
       name: 'chromium',

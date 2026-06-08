@@ -1,52 +1,56 @@
-import { test, expect} from '@playwright/test'
-import { PagesPartManager } from '../pageObjects/pagesPartManager'
+import { test, expect } from '@playwright/test'
+import { PagesManager } from '../pageObjects/pagesManager'
 
 test.describe('Navigation UI elements checks', () => {
 
-  let pagesPartManagerInstance: PagesPartManager
+  let pagesManagerInstance: PagesManager
 
-  test.beforeEach(async ({page}) => {
-    pagesPartManagerInstance = new PagesPartManager(page)
-    await pagesPartManagerInstance.homePagePart.navigateTo()
-    await pagesPartManagerInstance.homePagePart.acceptCookies()
+  test.beforeEach(async ({ page }) => {
+    pagesManagerInstance = new PagesManager(page)
+    await pagesManagerInstance.homePage.navigateTo()
   })
 
-  test('Navigation elements present on homepage', async ({page}) => {
-    await expect(page.locator('div[data-track-scope="Tab"] button[data-track="FlightsQsf"]')).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Lot+Hotel' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Ubezpieczenia' })).toBeVisible()
+  test('Navigation elements present on homepage', async () => {
+    const tabs = pagesManagerInstance.homePage.navigationTabs
 
-    await expect(page.locator('div[data-track-scope="Tab"]').getByRole('link', { name: 'Wakacje' })).toBeVisible()
-    await expect(page.locator('div[data-track-scope="Tab"]').getByRole('link', { name: 'City break'})).toBeVisible()
-    await expect(page.locator('div[data-track-scope="Tab"]').getByRole('link', { name: 'Hotele' })).toBeVisible()
+    await expect(tabs.flightsTab).toBeVisible()
+    await expect(tabs.lotHotelTab).toBeVisible()
+    await expect(tabs.insuranceTab).toBeVisible()
+    await expect(tabs.wakacjeLink).toBeVisible()
+    await expect(tabs.cityBreakLink).toBeVisible()
+    await expect(tabs.hoteleLink).toBeVisible()
   })
 
-  test('Navigation items lead to proper locations', async ({page}) => {
+  test('Navigation items lead to proper locations', async ({ page }) => {
+    const homePage = pagesManagerInstance.homePage
+    const tabs = homePage.navigationTabs
+    const flightPanel = homePage.searchPanel
+    const insurancePanel = homePage.insuranceSearchPanel
 
-    await page.getByRole('button', { name: 'Lot+Hotel' }).click()
-    await expect(page.getByLabel('W obie strony')).toBeHidden()
-    await expect(page.getByLabel('W jedną stronę')).toBeHidden()
+    await tabs.lotHotelTab.click()
+    await expect(flightPanel.roundTripRadio).toBeHidden()
+    await expect(flightPanel.oneWayRadio).toBeHidden()
 
-    await page.locator('div[data-track-scope="Tab"] button').first().click()
-    await expect(page.getByLabel('W obie strony')).toBeVisible()
-    await expect(page.getByLabel('W jedną stronę')).toBeVisible()
+    await tabs.flightsTab.click()
+    await expect(flightPanel.roundTripRadio).toBeVisible()
+    await expect(flightPanel.oneWayRadio).toBeVisible()
 
-    await page.locator('button[data-track="InsuranceQsf"]').click()
-    await expect(page.locator('#insurance-country')).toBeVisible()
-    await expect(page.locator('div[data-qsf-type="InsuranceQsf"] input[id="dates_from"]')).toBeVisible()
-    await expect(page.locator('div[data-qsf-type="InsuranceQsf"] input[id="dates_to"]')).toBeVisible()
-    await expect(page.locator('#insurance-pax')).toBeVisible()
-    await expect(page.locator('div[data-qsf-type="InsuranceQsf"] button[type="submit"]')).toBeVisible()
+    await tabs.insuranceTab.click()
+    await expect(insurancePanel.countryInput).toBeVisible()
+    await expect(insurancePanel.dateFromInput).toBeVisible()
+    await expect(insurancePanel.dateToInput).toBeVisible()
+    await expect(insurancePanel.passengersInput).toBeVisible()
+    await expect(insurancePanel.submitButton).toBeVisible()
 
-    await page.locator('div[data-track-scope="Tab"]').getByRole('link', { name: 'Wakacje' }).click()
+    await tabs.wakacjeLink.click()
     await expect(page).toHaveURL(/wakacje/)
-    await pagesPartManagerInstance.homePagePart.navigateTo()
+    await homePage.navigateTo()
 
-    await page.locator('div[data-track-scope="Tab"]').getByRole('link', { name: 'City break' }).click()
+    await tabs.cityBreakLink.click()
     await expect(page).toHaveURL(/city-break/)
-    await pagesPartManagerInstance.homePagePart.navigateTo()
+    await homePage.navigateTo()
 
-    await page.locator('div[data-track-scope="Tab"]').getByRole('link', { name: 'Hotele' }).click()
+    await tabs.hoteleLink.click()
     await expect(page).toHaveURL(/noclegi/)
   })
-});
+})

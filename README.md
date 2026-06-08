@@ -13,8 +13,17 @@ npx playwright install
 
 ```bash
 npm test                                  # run all tests
-npx playwright test tests/searchFlight.spec.ts   # run one file
-npx playwright test --headed              # show the browser
-npx playwright test --ui                  # interactive UI mode
-npx playwright show-report                # open the last HTML report
+
 ```
+
+## Test cases
+
+1. navigation.spec.ts with 'Navigation UI elements checks' test suite contains the following test cases:
+ - Navigation elements present on homepage
+ - Navigation items lead to proper locations
+
+2. searchFlight.spec.ts 'Search flight functionality checks' test suite contains the following test cases:
+ - Search flight check
+ - Switching destination and origin fields functionality works correctly
+ - Validation errors are displayed correctly when searching with empty values
+ - Search results contain 'Najleprze' and 'Najtańsze' badges

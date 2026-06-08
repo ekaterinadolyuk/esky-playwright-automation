@@ -1,11 +1,10 @@
-import { test as setup, expect } from '@playwright/test'
+import { test as setup } from '@playwright/test'
 import { STORAGE_STATE } from './storageState'
+import { PagesManager } from '../../pageObjects/pagesManager'
 
 setup('accept cookies and save storage state', async ({ page }) => {
-  await page.goto('https://www.esky.pl/')
-  const banner = page.getByTestId('uc-accept-all-button')
-  await banner.waitFor({ state: 'visible', timeout: 60000 })
-  await banner.click()
-  await expect(banner).toBeHidden()
+  const pagesManager = new PagesManager(page)
+  await pagesManager.homePage.navigateTo()
+  await pagesManager.homePage.acceptCookies()
   await page.context().storageState({ path: STORAGE_STATE })
 })
